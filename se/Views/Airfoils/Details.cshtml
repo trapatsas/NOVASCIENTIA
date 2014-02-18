@@ -86,11 +86,17 @@
     var points = [];
 
 
-    var ExportPoints = function () {
-        document.getElementById("testdiv").innerHTML = "@Model.Id" + ".dat</br>";
+    var ExportString = function () {
+        var csv = "@Model.Id" + ".dat\r\n";
         for (var counter = 1; counter < p.length ; counter += 1) {
-            document.getElementById("testdiv").innerHTML += p[counter].coords.usrCoords[1] + " " + p[counter].coords.usrCoords[2] + "</br>";
+            csv += p[counter].coords.usrCoords[1] + " " + p[counter].coords.usrCoords[2] + "\r\n";
         }
+
+        var name = "@Model.Id";
+
+        window.open("data:application/octet-stream;charset=utf-8," + escape(csv));
+
+        
     }
 
 
@@ -139,12 +145,9 @@
 
 </script>
 <form>
-    <input type='button' value='Export' onclick='ExportPoints();'>
+    <input type='button' value='Export' onclick='ExportString();'>
 </form>
 
-
-<div id="testdiv" style="width:600px; height:400px; border:1px dashed black; overflow:scroll;">
-</div>
 
 
 <p style="clear:both;">--------------.</p>

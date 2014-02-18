@@ -39,6 +39,13 @@ namespace se.Controllers
             return View(airfoils.ToList());
         }
 
+
+        public FileContentResult ExportCSV(string name, string csv)
+        {
+            return File(new System.Text.UTF8Encoding().GetBytes(csv), "text/plain", name + ".txt");
+
+        }
+
         // GET: /Airfoils/Details/5
         public ActionResult Details(string id)
         {
