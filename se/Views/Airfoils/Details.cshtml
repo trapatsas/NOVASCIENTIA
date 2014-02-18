@@ -1,0 +1,154 @@
+﻿@model se.Models.Dat
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Airfoil Designer</h2>
+
+<div>
+    <h4>Rotate, Scale & Save your airfoil!!!</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Airfoil Name
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+    </dl>
+</div>
+@{
+    var Xmax = Model.Coordinates.Max(x => x.Latitude).ToString().Replace(',', '.');
+    var Xmin = Model.Coordinates.Min(x => x.Latitude).ToString().Replace(',', '.');
+
+    var Ymax = Model.Coordinates.Max(x => x.Longitude).ToString().Replace(',', '.');
+    var Ymin = Model.Coordinates.Min(x => x.Longitude).ToString().Replace(',', '.');
+}
+
+
+
+<p style="clear:both;"></p>
+<div id="postnotification" class="alert alert-error">
+</div>
+<p style="clear:both;"></p>
+
+    <form class="form-inline" role="form">@Html.AntiForgeryToken()
+        <div class="form-group">
+            <input type="text" class="form-control" id="AirfoilTitle" name="AirfoilTitle" placeholder="Enter Title" value="">
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" id="AirfoilDescription" name="AirfoilDescription" placeholder="Place Description Here" value="">
+        </div>
+        <button type="button" class="btn btn-default" onclick='PostNewAirfoil();'>Save New Airfoil</button>
+    </form>
+<p style="clear:both;"></p>
+<div id="box" class="jxgbox" style="width:600px; height:300px;"></div>
+<script type="text/javascript">
+    var brd = JXG.JSXGraph.initBoard('box', { boundingbox: [@Xmin -0.1, @Xmax +0.1, @Ymax +0.1, @Ymin -0.1], axis: true, grid: true, keepaspectratio: true });
+    var p = [], col = 'yellow', pointList = [], singlePoint = [];
+    @foreach (var i in Model.Coordinates)
+    {
+    var x = @Html.DisplayFor(model => i.Latitude).ToString().Replace(',','.');
+    var y = @Html.DisplayFor(model => i.Longitude).ToString().Replace(',', '.');
+    var pointname = @Html.DisplayFor(model => i.Id).ToString();
+    <text>
+    singlePoint = [@pointname, @x, @y];
+    pointList.push(singlePoint);
+    </text>
+    }
+    var s = brd.create('slider', [[0.5, 0.5], [1, 0.5], [1, 1, 2]], { name: 'scale factor' });
+    var w = brd.create('slider', [[0.5, 0.8], [1, 0.8], [0, 0, - Math.PI]], { name: 'rotation angle' });
+    var t = brd.create('transform', [function () { return s.Value(); }, function () { return s.Value(); }], { type: 'scale' });
+    for (var i = 0; i < pointList.length; i++) {
+        var lat = pointList[i][1];
+        var long = pointList[i][2];
+        p.push(brd.create('point', [lat, long ], { strokeColor: col, fillColor: col, withLabel: false, visible: false }));
+    }
+    var r = brd.create('transform', [function () { return w.Value(); }, p[0]], { type: 'rotate' });  // angle, rotation center
+    var c = brd.create('curve', JXG.Math.Numerics.bspline(p, 4),
+               { strokecolor: 'blue', strokeOpacity: 1, strokeWidth: 2 });
+    t.bindTo(p);
+    r.bindTo(p);
+
+    brd.update();
+
+    var points = [];
+
+
+    var ExportPoints = function () {
+        document.getElementById("testdiv").innerHTML = "@Model.Id" + ".dat</br>";
+        for (var counter = 1; counter < p.length ; counter += 1) {
+            document.getElementById("testdiv").innerHTML += p[counter].coords.usrCoords[1] + " " + p[counter].coords.usrCoords[2] + "</br>";
+        }
+    }
+
+
+    var PostNewAirfoil = function () {
+
+        var title = document.getElementsByName("AirfoilTitle")[0].value;
+        var desc = document.getElementsByName("AirfoilDescription")[0].value;
+
+            for (var counter = 1; counter < p.length ; counter += 1) {
+                points.push({
+                    Latitude: p[counter].coords.usrCoords[1],
+                    Longitude: p[counter].coords.usrCoords[2],
+                    DatId: title
+                });
+            }
+
+            var Airfoil = {
+                Id: title,
+                Path: "new",
+                Description: desc,
+                Points: points
+            };
+
+        // Ajax Post
+        $.ajax({
+            type: 'POST',
+            url: '/Airfoils/Create',
+            traditional: true,
+            dataType: "json",
+            contentType: "application/json",
+            cache: false,
+            data: JSON.stringify(Airfoil),
+            success: function (data) {
+                handleResult(data.msg);
+            },
+            error: function (data) {
+                handleResult("Error: " + data.responseText);
+            }
+        });
+
+        function handleResult(content) {
+            $("#postnotification").html(content);
+        }
+
+    };
+
+</script>
+<form>
+    <input type='button' value='Export' onclick='ExportPoints();'>
+</form>
+
+
+<div id="testdiv" style="width:600px; height:400px; border:1px dashed black; overflow:scroll;">
+</div>
+
+
+<p style="clear:both;">--------------.</p>
+
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>

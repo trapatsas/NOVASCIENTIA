@@ -1,0 +1,94 @@
+﻿@model IEnumerable<se.Models.Dat>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Airfoil Search Engine</h2>
+    <p>
+    @using (Html.BeginForm())
+    {
+    <p>
+        Title: @Html.TextBox("id")
+        <input type="submit" value="Search" />
+    </p>
+    }
+    </p>
+
+<div class="btn-toolbar" role="toolbar" style="margin: 10px;">
+    <div class="btn-group">
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'a', 'post');">A</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'b', 'post');">B</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'c', 'post');">C</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'd', 'post');">D</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'e', 'post');">E</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'f', 'post');">F</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'g', 'post');">G</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'h', 'post');">H</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'i', 'post');">I</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'j', 'post');">J</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'k', 'post');">K</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'l', 'post');">L</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'm', 'post');">M</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'n', 'post');">N</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'o', 'post');">O</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'p', 'post');">P</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'q', 'post');">Q</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'r', 'post');">R</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 's', 'post');">S</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 't', 'post');">T</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'u', 'post');">U</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'v', 'post');">V</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'w', 'post');">W</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'x', 'post');">X</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'y', 'post');">Y</button>
+        <button type="button" class="btn btn-default" onclick="post_to_url('/Airfoils/', 'z', 'post');">Z</button>
+    </div>
+</div>
+
+<table class="table">
+    <tr>
+        <th>
+            Airfoil Name (Click to view!)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.ActionLink(item.Id, "Details", new { id = item.Id })
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+    </tr>
+}
+
+</table>
+
+<script>
+    function post_to_url(path, param, method) {
+        method = method || "post"; // Set method to post by default if not specified.
+
+        // The rest of this code assumes you are not using a library.
+        // It can be made less wordy if you use one.
+        var form = document.createElement("form");
+        form.setAttribute("method", method);
+        form.setAttribute("action", path);
+
+
+  
+                var hiddenField = document.createElement("input");
+                hiddenField.setAttribute("type", "hidden");
+                hiddenField.setAttribute("name", "id");
+                hiddenField.setAttribute("value", param);
+
+                form.appendChild(hiddenField);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
